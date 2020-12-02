@@ -1,7 +1,6 @@
 package day1_test
 
 import (
-	"os"
 	"path"
 	"testing"
 
@@ -25,13 +24,7 @@ func TestDay1(t *testing.T) {
 		t.Run(tt.in, func(t *testing.T) {
 			t.Parallel()
 
-			f, err := os.Open(path.Join("testdata", tt.in))
-			if err != nil {
-				t.Fatal(err)
-			}
-			defer f.Close()
-
-			in, err := advent2020.ReadInts(f)
+			in, err := advent2020.ReadIntsFile(path.Join("testdata", tt.in))
 			if err != nil {
 				t.Fatal(err)
 			}
