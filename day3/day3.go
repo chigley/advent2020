@@ -39,7 +39,7 @@ func ParseGrid(in []string) Grid {
 }
 
 func (g Grid) Part1() (int, error) {
-	return g.checkSlope(3, 1)
+	return g.checkSlope(advent2020.XY{X: 3, Y: 1})
 }
 
 func (g Grid) Part2() (int, error) {
@@ -53,7 +53,7 @@ func (g Grid) Part2() (int, error) {
 		{1, 2},
 	}
 	for _, s := range slopes {
-		trees, err := g.checkSlope(s.X, s.Y)
+		trees, err := g.checkSlope(s)
 		if err != nil {
 			return 0, err
 		}
@@ -63,9 +63,9 @@ func (g Grid) Part2() (int, error) {
 	return product, nil
 }
 
-func (g Grid) checkSlope(xStep, yStep int) (int, error) {
+func (g Grid) checkSlope(gradient advent2020.XY) (int, error) {
 	var treeCount int
-	x, y := xStep, yStep
+	x, y := gradient.X, gradient.Y
 	for {
 		if y >= g.height {
 			return treeCount, nil
@@ -81,7 +81,7 @@ func (g Grid) checkSlope(xStep, yStep int) (int, error) {
 			treeCount++
 		}
 
-		x = (x + xStep) % g.width
-		y += yStep
+		x = (x + gradient.X) % g.width
+		y += gradient.Y
 	}
 }
