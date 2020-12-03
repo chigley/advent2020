@@ -65,13 +65,12 @@ func (g Grid) Part2() (int, error) {
 
 func (g Grid) checkSlope(gradient advent2020.XY) (int, error) {
 	var treeCount int
-	x, y := gradient.X, gradient.Y
+	pos := gradient
 	for {
-		if y >= g.height {
+		if pos.Y >= g.height {
 			return treeCount, nil
 		}
 
-		pos := advent2020.XY{X: x, Y: y}
 		sq, ok := g.m[pos]
 		if !ok {
 			return 0, fmt.Errorf("day3: out of range: %v", pos)
@@ -81,7 +80,7 @@ func (g Grid) checkSlope(gradient advent2020.XY) (int, error) {
 			treeCount++
 		}
 
-		x = (x + gradient.X) % g.width
-		y += gradient.Y
+		pos = pos.Add(gradient)
+		pos.X = pos.X % g.width
 	}
 }
