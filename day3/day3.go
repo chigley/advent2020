@@ -81,6 +81,6 @@ func (g Grid) checkSlope(gradient advent2020.XY) (int, error) {
 		}
 
 		pos = pos.Add(gradient)
-		pos.X = pos.X % g.width
+		pos.X %= g.width
 	}
 }
