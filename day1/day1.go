@@ -1,10 +1,8 @@
 package day1
 
 import (
-	"errors"
+	"github.com/chigley/advent2020"
 )
-
-var ErrNoResult = errors.New("day1: no result found")
 
 const target = 2020
 
@@ -16,7 +14,7 @@ func Part1(ints []int) (int, error) {
 			}
 		}
 	}
-	return 0, ErrNoResult
+	return 0, advent2020.ErrNoResult
 }
 
 func Part2(ints []int) (int, error) {
@@ -29,5 +27,5 @@ func Part2(ints []int) (int, error) {
 			}
 		}
 	}
-	return 0, ErrNoResult
+	return 0, advent2020.ErrNoResult
 }
