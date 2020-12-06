@@ -42,9 +42,9 @@ func SeatID(seat string) int {
 	var row, col int
 	for i, c := range seat {
 		if c == 'B' {
-			row |= 1 << (6 - i)
+			row |= 1 << (len(seat) - (i + 4))
 		} else if c == 'R' {
-			col |= 1 << (9 - i)
+			col |= 1 << (len(seat) - (i + 1))
 		}
 	}
 	return row*8 + col
