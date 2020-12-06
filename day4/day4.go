@@ -31,30 +31,21 @@ type (
 	fieldValidationFunc    func(val string) (bool, error)
 )
 
-func ParsePassports(in []string) ([]Passport, error) {
-	var passports []Passport
-
-	p := make(Passport)
-	for i, l := range in {
-		if l == "" {
-			passports = append(passports, p)
-			p = make(Passport)
-			continue
-		}
-
-		for _, f := range strings.Split(l, " ") {
-			splitField := strings.SplitN(f, ":", 2)
-			if len(splitField) != 2 {
-				return nil, fmt.Errorf("day4: failed to parse field: %q", f)
+func ParsePassports(in [][]string) ([]Passport, error) {
+	passports := make([]Passport, len(in))
+	for i, lines := range in {
+		p := make(Passport)
+		for _, l := range lines {
+			for _, f := range strings.Split(l, " ") {
+				splitField := strings.SplitN(f, ":", 2)
+				if len(splitField) != 2 {
+					return nil, fmt.Errorf("day4: failed to parse field: %q", f)
+				}
+				p[splitField[0]] = splitField[1]
 			}
-			p[splitField[0]] = splitField[1]
 		}
-
-		if i == len(in)-1 {
-			passports = append(passports, p)
-		}
+		passports[i] = p
 	}
-
 	return passports, nil
 }
 

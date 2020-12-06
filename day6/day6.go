@@ -29,31 +29,22 @@ func (g Group) AnsweredByAll() int {
 	return questions
 }
 
-func ParseGroups(in []string) []Group {
-	var groups []Group
-
-	g := NewGroup()
-	for i, l := range in {
-		if l == "" {
-			groups = append(groups, g)
-			g = NewGroup()
-			continue
-		}
-
-		for _, c := range l {
-			q := Question(c)
-			if g.answeredBy[q] == nil {
-				g.answeredBy[q] = make(People)
+func ParseGroups(in [][]string) []Group {
+	groups := make([]Group, len(in))
+	for i, lines := range in {
+		g := NewGroup()
+		for _, l := range lines {
+			for _, c := range l {
+				q := Question(c)
+				if g.answeredBy[q] == nil {
+					g.answeredBy[q] = make(People)
+				}
+				g.answeredBy[q][PersonIndex(g.people)] = struct{}{}
 			}
-			g.answeredBy[q][PersonIndex(g.people)] = struct{}{}
+			g.people++
 		}
-		g.people++
-
-		if i == len(in)-1 {
-			groups = append(groups, g)
-		}
+		groups[i] = g
 	}
-
 	return groups
 }
 

@@ -24,7 +24,7 @@ func TestDay6(t *testing.T) {
 		t.Run(tt.in, func(t *testing.T) {
 			t.Parallel()
 
-			in, err := advent2020.ReadStrings(path.Join("testdata", tt.in))
+			in, err := advent2020.ReadStringGroups(path.Join("testdata", tt.in))
 			if err != nil {
 				t.Fatal(err)
 			}

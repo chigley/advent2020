@@ -59,3 +59,31 @@ func readStrings(r io.Reader) ([]string, error) {
 
 	return ret, nil
 }
+
+// ReadStringGroups reads a file of string data formed of groups of lines, where
+// groups are separated by an empty line.
+func ReadStringGroups(name string) ([][]string, error) {
+	lines, err := ReadStrings(name)
+	if err != nil {
+		return nil, fmt.Errorf("advent2020: reading strings: %w", err)
+	}
+
+	var groups [][]string
+
+	var group []string
+	for i, l := range lines {
+		if l == "" {
+			groups = append(groups, group)
+			group = nil
+			continue
+		}
+
+		group = append(group, l)
+
+		if i == len(lines)-1 {
+			groups = append(groups, group)
+		}
+	}
+
+	return groups, nil
+}
