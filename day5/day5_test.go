@@ -31,7 +31,7 @@ func TestSeatID(t *testing.T) {
 }
 
 func TestDay5(t *testing.T) {
-	in, err := advent2020.ReadStringsFile(path.Join("testdata", "input"))
+	in, err := advent2020.ReadStrings(path.Join("testdata", "input"))
 	if err != nil {
 		t.Fatal(err)
 	}

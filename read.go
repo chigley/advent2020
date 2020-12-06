@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func ReadIntsFile(name string) ([]int, error) {
+func ReadInts(name string) ([]int, error) {
 	f, err := os.Open(name)
 	if err != nil {
 		return nil, fmt.Errorf("advent2020: opening file: %w", err)
@@ -36,7 +36,7 @@ func readInts(r io.Reader) ([]int, error) {
 	return ret, nil
 }
 
-func ReadStringsFile(name string) ([]string, error) {
+func ReadStrings(name string) ([]string, error) {
 	f, err := os.Open(name)
 	if err != nil {
 		return nil, fmt.Errorf("advent2020: opening file: %w", err)
