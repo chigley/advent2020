@@ -25,10 +25,7 @@ type BagCount struct {
 }
 
 func Part1(containedBy ContainedBy, target Colour) int {
-	var candidates []Colour
-	for col := range containedBy[target] {
-		candidates = append(candidates, col)
-	}
+	candidates := containedBy[target].Slice()
 
 	var n int
 	seen := make(ColourSet)
@@ -42,9 +39,7 @@ func Part1(containedBy ContainedBy, target Colour) int {
 		seen[col] = struct{}{}
 
 		n++
-		for col := range containedBy[col] {
-			candidates = append(candidates, col)
-		}
+		candidates = append(candidates, containedBy[col].Slice()...)
 	}
 
 	return n
@@ -105,4 +100,14 @@ func ParseRules(in []string) (Contains, ContainedBy, error) {
 	}
 
 	return contains, containedBy, nil
+}
+
+func (cs ColourSet) Slice() []Colour {
+	var i int
+	colours := make([]Colour, len(cs))
+	for col := range cs {
+		colours[i] = col
+		i++
+	}
+	return colours
 }
