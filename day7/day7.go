@@ -27,7 +27,6 @@ type BagCount struct {
 func Part1(containedBy ContainedBy, target Colour) int {
 	candidates := containedBy[target].Slice()
 
-	var n int
 	seen := make(ColourSet)
 	for len(candidates) > 0 {
 		var col Colour
@@ -38,11 +37,10 @@ func Part1(containedBy ContainedBy, target Colour) int {
 		}
 		seen[col] = struct{}{}
 
-		n++
 		candidates = append(candidates, containedBy[col].Slice()...)
 	}
 
-	return n
+	return len(seen)
 }
 
 func Part2(contains Contains, target Colour) int {
