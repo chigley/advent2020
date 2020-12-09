@@ -42,11 +42,3 @@ func MinInts(ns []int) (int, error) {
 	}
 	return min, nil
 }
-
-func Sum(ns []int) int {
-	var sum int
-	for _, n := range ns {
-		sum += n
-	}
-	return sum
-}

@@ -27,22 +27,35 @@ func isValid(preceding []int, n int) bool {
 }
 
 func Part2(in []int, target int) (int, error) {
+	sums := make([]int, len(in))
+	var sum int
+	for i, n := range in {
+		sums[i] = sum
+		sum += n
+	}
+
 	for start := 0; start < len(in); start++ {
 		for end := start + 2; end < len(in); end++ {
-			set := in[start:end]
-			if advent2020.Sum(set) == target {
-				min, err := advent2020.MinInts(set)
-				if err != nil {
-					return 0, fmt.Errorf("day9: min: %w", err)
-				}
-
-				max, err := advent2020.MaxInts(set)
-				if err != nil {
-					return 0, fmt.Errorf("day9: max: %w", err)
-				}
-
-				return min + max, nil
+			if sum := sums[end] - sums[start]; sum < target {
+				continue
+			} else if sum > target {
+				break
 			}
+
+			// sum == target
+			set := in[start:end]
+
+			min, err := advent2020.MinInts(set)
+			if err != nil {
+				return 0, fmt.Errorf("day9: min: %w", err)
+			}
+
+			max, err := advent2020.MaxInts(set)
+			if err != nil {
+				return 0, fmt.Errorf("day9: max: %w", err)
+			}
+
+			return min + max, nil
 		}
 	}
 
