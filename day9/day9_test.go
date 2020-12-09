@@ -13,9 +13,10 @@ var tests = []struct {
 	in             string
 	preambleLength int
 	part1          int
+	part2          int
 }{
-	{"example", 5, 127},
-	{"input", 25, 556543474},
+	{"example", 5, 127, 62},
+	{"input", 25, 556543474, 76096372},
 }
 
 func TestDay9(t *testing.T) {
@@ -34,6 +35,12 @@ func TestDay9(t *testing.T) {
 				t.Error(err)
 			}
 			assert.Equal(t, tt.part1, part1)
+
+			part2, err := day9.Part2(in, part1)
+			if err != nil {
+				t.Error(err)
+			}
+			assert.Equal(t, tt.part2, part2)
 		})
 	}
 }

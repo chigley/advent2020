@@ -1,6 +1,8 @@
 package day9
 
 import (
+	"fmt"
+
 	"github.com/chigley/advent2020"
 )
 
@@ -22,4 +24,27 @@ func isValid(preceding []int, n int) bool {
 		}
 	}
 	return false
+}
+
+func Part2(in []int, target int) (int, error) {
+	for start := 0; start < len(in); start++ {
+		for end := start + 2; end < len(in); end++ {
+			set := in[start:end]
+			if advent2020.Sum(set) == target {
+				min, err := advent2020.MinInts(set)
+				if err != nil {
+					return 0, fmt.Errorf("day9: min: %w", err)
+				}
+
+				max, err := advent2020.MaxInts(set)
+				if err != nil {
+					return 0, fmt.Errorf("day9: max: %w", err)
+				}
+
+				return min + max, nil
+			}
+		}
+	}
+
+	return 0, advent2020.ErrNoResult
 }
