@@ -16,10 +16,23 @@ const (
 
 type Grid map[advent2020.XY]Square
 
+type (
+	stepFunc     func(g Grid) (Grid, bool)
+	adjacentFunc func(g Grid, pos advent2020.XY) []advent2020.XY
+)
+
 func Part1(g Grid) int {
+	stepFunc := buildStepFunc(
+		func(_ Grid, pos advent2020.XY) []advent2020.XY { return pos.Adjacent() },
+		4,
+	)
+	return occupiedWhenStable(g, stepFunc)
+}
+
+func occupiedWhenStable(g Grid, step stepFunc) int {
 	for {
 		var hasChange bool
-		g, hasChange = g.Step()
+		g, hasChange = step(g)
 
 		if !hasChange {
 			break
@@ -35,32 +48,34 @@ func Part1(g Grid) int {
 	return occupied
 }
 
-func (g Grid) Step() (Grid, bool) {
-	newGrid := make(Grid, len(g))
-	var hasChange bool
-	for pos, sq := range g {
-		newGrid[pos] = sq
+func buildStepFunc(adjacent adjacentFunc, threshold int) stepFunc {
+	return func(g Grid) (Grid, bool) {
+		newGrid := make(Grid, len(g))
+		var hasChange bool
+		for pos, sq := range g {
+			newGrid[pos] = sq
 
-		if sq == Floor {
-			continue
-		}
+			if sq == Floor {
+				continue
+			}
 
-		var occupied int
-		for _, neighbourPos := range pos.Adjacent() {
-			if g[neighbourPos] == Occupied {
-				occupied++
+			var occupied int
+			for _, neighbourPos := range adjacent(g, pos) {
+				if g[neighbourPos] == Occupied {
+					occupied++
+				}
+			}
+
+			if sq == Empty && occupied == 0 {
+				newGrid[pos] = Occupied
+				hasChange = true
+			} else if sq == Occupied && occupied >= threshold {
+				newGrid[pos] = Empty
+				hasChange = true
 			}
 		}
-
-		if sq == Empty && occupied == 0 {
-			newGrid[pos] = Occupied
-			hasChange = true
-		} else if sq == Occupied && occupied >= 4 {
-			newGrid[pos] = Empty
-			hasChange = true
-		}
+		return newGrid, hasChange
 	}
-	return newGrid, hasChange
 }
 
 func ParseGrid(in []string) (Grid, error) {

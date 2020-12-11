@@ -1,5 +1,16 @@
 package advent2020
 
+var Directions = []XY{
+	{-1, -1},
+	{-1, 0},
+	{-1, 1},
+	{0, -1},
+	{0, 1},
+	{1, -1},
+	{1, 0},
+	{1, 1},
+}
+
 type XY struct {
 	X, Y int
 }
@@ -12,14 +23,9 @@ func (p1 XY) Add(p2 XY) XY {
 }
 
 func (p XY) Adjacent() []XY {
-	adjacent := make([]XY, 0, 8)
-	for x := -1; x < 2; x++ {
-		for y := -1; y < 2; y++ {
-			if x == 0 && y == 0 {
-				continue
-			}
-			adjacent = append(adjacent, p.Add(XY{X: x, Y: y}))
-		}
+	adjacent := make([]XY, len(Directions))
+	for i, d := range Directions {
+		adjacent[i] = p.Add(d)
 	}
 	return adjacent
 }
