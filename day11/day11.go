@@ -14,6 +14,8 @@ const (
 	Occupied
 )
 
+func (s Square) isSeat() bool { return s == Empty || s == Occupied }
+
 type Grid map[advent2020.XY]Square
 
 type (
@@ -26,6 +28,11 @@ func Part1(g Grid) int {
 		func(_ Grid, pos advent2020.XY) []advent2020.XY { return pos.Adjacent() },
 		4,
 	)
+	return occupiedWhenStable(g, stepFunc)
+}
+
+func Part2(g Grid) int {
+	stepFunc := buildStepFunc(visibleSeats, 5)
 	return occupiedWhenStable(g, stepFunc)
 }
 
@@ -76,6 +83,26 @@ func buildStepFunc(adjacent adjacentFunc, threshold int) stepFunc {
 		}
 		return newGrid, hasChange
 	}
+}
+
+func visibleSeats(g Grid, pos advent2020.XY) []advent2020.XY {
+	seats := make([]advent2020.XY, 0, len(advent2020.Directions))
+	for _, d := range advent2020.Directions {
+		newPos := pos
+		for {
+			newPos = newPos.Add(d)
+
+			sq, ok := g[newPos]
+			if !ok {
+				break
+			}
+			if sq.isSeat() {
+				seats = append(seats, newPos)
+				break
+			}
+		}
+	}
+	return seats
 }
 
 func ParseGrid(in []string) (Grid, error) {
