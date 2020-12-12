@@ -6,6 +6,13 @@ import (
 
 var ErrEmptySlice = errors.New("advent2020: slice is empty")
 
+func Abs(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
+}
+
 func Max(x, y int) int {
 	if x > y {
 		return x
