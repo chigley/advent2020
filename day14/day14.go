@@ -16,8 +16,18 @@ func (m *Mask) Apply(val uint64) uint64 {
 	return val
 }
 
+type ParseMaskFunc func(mask string) ([]Mask, error)
+
 func Part1(in []string) (uint64, error) {
-	var mask *Mask
+	return sumMemoryValues(in, parseSingleMask, true)
+}
+
+func Part2(in []string) (uint64, error) {
+	return sumMemoryValues(in, permuteFloatingMask, false)
+}
+
+func sumMemoryValues(in []string, parseMask ParseMaskFunc, maskValue bool) (uint64, error) {
+	var masks []Mask
 	memory := make(map[uint64]uint64)
 
 	for _, l := range in {
@@ -29,7 +39,7 @@ func Part1(in []string) (uint64, error) {
 		lvalue, rvalue := tokens[0], tokens[1]
 		if lvalue == "mask" {
 			var err error
-			mask, err = parseMask(rvalue)
+			masks, err = parseMask(rvalue)
 			if err != nil {
 				return 0, fmt.Errorf("day14: parsing mask %q: %w", rvalue, err)
 			}
@@ -44,43 +54,12 @@ func Part1(in []string) (uint64, error) {
 				return 0, fmt.Errorf("day14: ParseUint: %w", err)
 			}
 
-			memory[addr] = mask.Apply(n)
-		}
-	}
-
-	var sum uint64
-	for _, n := range memory {
-		sum += n
-	}
-	return sum, nil
-}
-
-func Part2(in []string) (uint64, error) {
-	var masks []Mask
-	memory := make(map[uint64]uint64)
-
-	for _, l := range in {
-		tokens := strings.SplitN(l, " = ", 2)
-		if len(tokens) != 2 {
-			return 0, fmt.Errorf("day14: can't parse line: %q", l)
-		}
-
-		lvalue, rvalue := tokens[0], tokens[1]
-		if lvalue == "mask" {
-			masks = permuteMasks(rvalue)
-		} else {
-			var addr uint64
-			if _, err := fmt.Sscanf(lvalue, "mem[%d]", &addr); err != nil {
-				return 0, fmt.Errorf("day14: can't parse token: %q: %w", l, err)
-			}
-
-			n, err := strconv.ParseUint(rvalue, 10, 64)
-			if err != nil {
-				return 0, fmt.Errorf("day14: ParseUint: %w", err)
-			}
-
-			for _, m := range masks {
-				memory[m.Apply(addr)] = n
+			if maskValue {
+				memory[addr] = masks[0].Apply(n)
+			} else {
+				for _, m := range masks {
+					memory[m.Apply(addr)] = n
+				}
 			}
 		}
 	}
@@ -92,7 +71,7 @@ func Part2(in []string) (uint64, error) {
 	return sum, nil
 }
 
-func parseMask(mask string) (*Mask, error) {
+func parseSingleMask(mask string) ([]Mask, error) {
 	andMask, err := strconv.ParseUint(strings.ReplaceAll(mask, "X", "1"), 2, 64)
 	if err != nil {
 		return nil, fmt.Errorf("day14: ParseUint: %w", err)
@@ -103,30 +82,27 @@ func parseMask(mask string) (*Mask, error) {
 		return nil, fmt.Errorf("day14: ParseUint: %w", err)
 	}
 
-	return &Mask{
-		andMask: andMask,
-		orMask:  orMask,
-	}, nil
+	return []Mask{{andMask: andMask, orMask: orMask}}, nil
 }
 
-func permuteMasks(mask string) []Mask {
-	return permuteMasksHelper(mask, Mask{andMask: (1 << 36) - 1}, 0)
+func permuteFloatingMask(mask string) ([]Mask, error) {
+	return permuteFloatingMaskHelper(mask, Mask{andMask: (1 << 36) - 1}, 0), nil
 }
 
-func permuteMasksHelper(mask string, startMask Mask, startIndex int) []Mask {
+func permuteFloatingMaskHelper(mask string, startMask Mask, startIndex int) []Mask {
 	for i := startIndex; i < len(mask); i++ {
 		switch mask[i] {
 		case '1':
 			startMask.orMask |= 1 << (35 - i)
 		case 'X':
 			// One branch where we set bit 35-i to 0
-			ret := permuteMasksHelper(mask, Mask{
+			ret := permuteFloatingMaskHelper(mask, Mask{
 				andMask: startMask.andMask & ^(1 << (35 - i)),
 				orMask:  startMask.orMask,
 			}, i+1)
 
 			// Another branch where we set bit 35-i to 1
-			return append(ret, permuteMasksHelper(mask, Mask{
+			return append(ret, permuteFloatingMaskHelper(mask, Mask{
 				andMask: startMask.andMask,
 				orMask:  startMask.orMask | (1 << (35 - i)),
 			}, i+1)...)
