@@ -86,27 +86,27 @@ func parseSingleMask(mask string) ([]Mask, error) {
 }
 
 func permuteFloatingMask(mask string) ([]Mask, error) {
-	return permuteFloatingMaskHelper(mask, Mask{andMask: (1 << 36) - 1}, 0), nil
+	return permuteFloatingMaskHelper(mask, Mask{andMask: (1 << 36) - 1}), nil
 }
 
-func permuteFloatingMaskHelper(mask string, maskAcc Mask, startIndex int) []Mask {
-	for i := startIndex; i < len(mask); i++ {
-		bit := uint64(1 << (35 - i))
-		switch mask[i] {
+func permuteFloatingMaskHelper(mask string, maskAcc Mask) []Mask {
+	for i, c := range mask {
+		bit := uint64(1 << (len(mask) - (i + 1)))
+		switch c {
 		case '1':
 			maskAcc.orMask |= bit
 		case 'X':
 			// One branch where we set bit to 0
-			ret := permuteFloatingMaskHelper(mask, Mask{
+			ret := permuteFloatingMaskHelper(mask[i+1:], Mask{
 				andMask: maskAcc.andMask &^ bit,
 				orMask:  maskAcc.orMask,
-			}, i+1)
+			})
 
 			// Another branch where we set bit to 1
-			return append(ret, permuteFloatingMaskHelper(mask, Mask{
+			return append(ret, permuteFloatingMaskHelper(mask[i+1:], Mask{
 				andMask: maskAcc.andMask,
 				orMask:  maskAcc.orMask | bit,
-			}, i+1)...)
+			})...)
 		}
 	}
 	return []Mask{maskAcc}
