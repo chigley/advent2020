@@ -97,7 +97,7 @@ func permuteFloatingMaskHelper(mask string, maskAcc Mask, startIndex int) []Mask
 		case 'X':
 			// One branch where we set bit 35-i to 0
 			ret := permuteFloatingMaskHelper(mask, Mask{
-				andMask: maskAcc.andMask & ^(1 << (35 - i)),
+				andMask: maskAcc.andMask &^ (1 << (35 - i)),
 				orMask:  maskAcc.orMask,
 			}, i+1)
 
