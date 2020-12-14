@@ -91,20 +91,21 @@ func permuteFloatingMask(mask string) ([]Mask, error) {
 
 func permuteFloatingMaskHelper(mask string, maskAcc Mask, startIndex int) []Mask {
 	for i := startIndex; i < len(mask); i++ {
+		bit := uint64(1 << (35 - i))
 		switch mask[i] {
 		case '1':
-			maskAcc.orMask |= 1 << (35 - i)
+			maskAcc.orMask |= bit
 		case 'X':
-			// One branch where we set bit 35-i to 0
+			// One branch where we set bit to 0
 			ret := permuteFloatingMaskHelper(mask, Mask{
-				andMask: maskAcc.andMask &^ (1 << (35 - i)),
+				andMask: maskAcc.andMask &^ bit,
 				orMask:  maskAcc.orMask,
 			}, i+1)
 
-			// Another branch where we set bit 35-i to 1
+			// Another branch where we set bit to 1
 			return append(ret, permuteFloatingMaskHelper(mask, Mask{
 				andMask: maskAcc.andMask,
-				orMask:  maskAcc.orMask | (1 << (35 - i)),
+				orMask:  maskAcc.orMask | bit,
 			}, i+1)...)
 		}
 	}
