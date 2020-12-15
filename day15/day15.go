@@ -15,6 +15,10 @@ func Part1(in []int) int {
 	return nthNumber(in, 2020)
 }
 
+func Part2(in []int) int {
+	return nthNumber(in, 30000000)
+}
+
 func nthNumber(startingNumbers []int, n Turn) int {
 	if int(n) <= len(startingNumbers) {
 		return startingNumbers[n-1]
