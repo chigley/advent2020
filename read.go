@@ -2,6 +2,7 @@ package advent2020
 
 import (
 	"bufio"
+	"encoding/csv"
 	"fmt"
 	"io"
 	"os"
@@ -86,4 +87,29 @@ func ReadStringGroups(name string) ([][]string, error) {
 	}
 
 	return groups, nil
+}
+
+func ReadIntLines(r io.Reader) ([][]int, error) {
+	var ret [][]int
+
+	reader := csv.NewReader(r)
+	for {
+		record, err := reader.Read()
+		if err == io.EOF {
+			return ret, nil
+		}
+		if err != nil {
+			return nil, fmt.Errorf("advent2020: read error: %w", err)
+		}
+
+		line := make([]int, len(record))
+		for i, nStr := range record {
+			n, err := strconv.Atoi(nStr)
+			if err != nil {
+				return nil, fmt.Errorf("advent2020: atoi: %w", err)
+			}
+			line[i] = n
+		}
+		ret = append(ret, line)
+	}
 }
