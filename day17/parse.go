@@ -7,12 +7,12 @@ import (
 )
 
 func ParseGrid(in []string) (*Grid, error) {
-	cubes := make(map[advent2020.XYZ]struct{})
+	cubes := make(map[advent2020.WXYZ]struct{})
 	for y, l := range in {
 		for x, c := range l {
 			switch c {
 			case '#':
-				cubes[advent2020.XYZ{X: x, Y: y, Z: 0}] = struct{}{}
+				cubes[advent2020.WXYZ{W: 0, X: x, Y: y, Z: 0}] = struct{}{}
 			case '.':
 			default:
 				return nil, fmt.Errorf("day17: unexpected token: %q", c)
