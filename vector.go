@@ -77,3 +77,30 @@ func (p XY) RotateClockwise(steps int) XY {
 func (p XY) RotateAnticlockwise(steps int) XY {
 	return p.RotateClockwise(4 - steps%4)
 }
+
+type XYZ struct {
+	X, Y, Z int
+}
+
+func (p1 XYZ) Add(p2 XYZ) XYZ {
+	return XYZ{
+		X: p1.X + p2.X,
+		Y: p1.Y + p2.Y,
+		Z: p1.Z + p2.Z,
+	}
+}
+
+func (p XYZ) Adjacent() []XYZ {
+	adjacent := make([]XYZ, 0, 26)
+	for x := -1; x <= 1; x++ {
+		for y := -1; y <= 1; y++ {
+			for z := -1; z <= 1; z++ {
+				if x == 0 && y == 0 && z == 0 {
+					continue
+				}
+				adjacent = append(adjacent, p.Add(XYZ{x, y, z}))
+			}
+		}
+	}
+	return adjacent
+}
