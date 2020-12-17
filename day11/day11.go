@@ -118,7 +118,7 @@ func ParseGrid(in []string) (Grid, error) {
 			case '#':
 				grid[pos] = Occupied
 			default:
-				return nil, fmt.Errorf("day11: unexpected token: %q", pos)
+				return nil, fmt.Errorf("day11: unexpected token: %q", c)
 			}
 
 		}
