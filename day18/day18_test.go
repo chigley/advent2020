@@ -10,15 +10,16 @@ import (
 )
 
 var evalTests = []struct {
-	in  string
-	out int
+	in                  string
+	samePrecedence      int
+	differentPrecedence int
 }{
-	{"1 + 2 * 3 + 4 * 5 + 6", 71},
-	{"1 + (2 * 3) + (4 * (5 + 6))", 51},
-	{"2 * 3 + (4 * 5)", 26},
-	{"5 + (8 * 3 + 9 + 3 * 4 * 3)", 437},
-	{"5 * 9 * (7 * 3 * 3 + 9 * 3 + (8 + 6 * 4))", 12240},
-	{"((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2", 13632},
+	{"1 + 2 * 3 + 4 * 5 + 6", 71, 231},
+	{"1 + (2 * 3) + (4 * (5 + 6))", 51, 51},
+	{"2 * 3 + (4 * 5)", 26, 46},
+	{"5 + (8 * 3 + 9 + 3 * 4 * 3)", 437, 1445},
+	{"5 * 9 * (7 * 3 * 3 + 9 * 3 + (8 + 6 * 4))", 12240, 669060},
+	{"((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2", 13632, 23340},
 }
 
 func TestDay18(t *testing.T) {
@@ -32,6 +33,12 @@ func TestDay18(t *testing.T) {
 		t.Error(err)
 	}
 	assert.Equal(t, 75592527415659, part1)
+
+	part2, err := day18.Part2(in)
+	if err != nil {
+		t.Error(err)
+	}
+	assert.Equal(t, 360029542265462, part2)
 }
 
 func TestEval(t *testing.T) {
@@ -40,12 +47,18 @@ func TestEval(t *testing.T) {
 		t.Run(tt.in, func(t *testing.T) {
 			t.Parallel()
 
-			n, err := day18.Eval(tt.in)
+			samePrecedence, err := day18.Eval(tt.in, true)
 			if err != nil {
 				t.Error(err)
 			}
 
-			assert.Equal(t, tt.out, n)
+			differentPrecedence, err := day18.Eval(tt.in, false)
+			if err != nil {
+				t.Error(err)
+			}
+
+			assert.Equal(t, tt.samePrecedence, samePrecedence)
+			assert.Equal(t, tt.differentPrecedence, differentPrecedence)
 		})
 	}
 }

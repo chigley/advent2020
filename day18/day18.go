@@ -8,9 +8,17 @@ import (
 )
 
 func Part1(in []string) (int, error) {
+	return sumLines(in, true)
+}
+
+func Part2(in []string) (int, error) {
+	return sumLines(in, false)
+}
+
+func sumLines(in []string, samePrecedence bool) (int, error) {
 	var sum int
 	for _, l := range in {
-		n, err := Eval(l)
+		n, err := Eval(l, samePrecedence)
 		if err != nil {
 			return 0, fmt.Errorf("day18: evaluating %q: %w", l, err)
 		}
@@ -19,8 +27,8 @@ func Part1(in []string) (int, error) {
 	return sum, nil
 }
 
-func Eval(expr string) (int, error) {
-	postfix, err := infixToPostfix(expr)
+func Eval(expr string, samePrecedence bool) (int, error) {
+	postfix, err := infixToPostfix(expr, samePrecedence)
 	if err != nil {
 		return 0, fmt.Errorf("day18: converting infix to postfix: %w", err)
 	}
@@ -35,13 +43,19 @@ func Eval(expr string) (int, error) {
 
 type PostfixExpr []interface{}
 
-// https://en.wikipedia.org/wiki/Shunting-yard_algorithm, but treating all
-// operators as equal precedence and left-associative
-func infixToPostfix(expr string) (PostfixExpr, error) {
+// https://en.wikipedia.org/wiki/Shunting-yard_algorithm
+func infixToPostfix(expr string, samePrecedence bool) (PostfixExpr, error) {
 	var (
 		output    PostfixExpr
 		operators []byte
 	)
+
+	var precedence map[byte]int
+	if samePrecedence {
+		precedence = map[byte]int{'+': 0, '*': 0}
+	} else {
+		precedence = map[byte]int{'+': 1, '*': 0}
+	}
 
 	// We can get away with removing whitespace and doing this character by
 	// character since numbers in the puzzle input are always single-digit.
@@ -61,7 +75,7 @@ func infixToPostfix(expr string) (PostfixExpr, error) {
 			}
 			operators = operators[1:]
 		} else if tok == '+' || tok == '*' {
-			for len(operators) > 0 && operators[0] != '(' {
+			for len(operators) > 0 && operators[0] != '(' && precedence[operators[0]] >= precedence[tok] {
 				var op byte
 				op, operators = operators[0], operators[1:]
 				output = append(output, op)
