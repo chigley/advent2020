@@ -1,34 +1,58 @@
 package day20
 
-import (
-	"github.com/chigley/advent2020"
-)
+type Tile [][]byte
 
-type Tile []string
+func (t Tile) Permutations() []Tile {
+	return append(t.RotatePermutations(), t.Flip().RotatePermutations()...)
+}
 
-func (t Tile) Edges() []string {
-	edges := make([]string, 0, 4)
+func (t Tile) RotatePermutations() []Tile {
+	ret := make([]Tile, 4)
+	ret[0] = t
+	for i := 0; i < 3; i++ {
+		t = t.RotateLeft()
+		ret[i+1] = t
+	}
+	return ret
+}
 
-	// Top row, left to right
-	edges = append(edges, t[0])
+func (t Tile) RotateLeft() Tile {
+	ret := make(Tile, len(t))
+	for i := 0; i < len(t); i++ {
+		ret[i] = make([]byte, len(t[0]))
+	}
 
-	// Bottom row, left to right
-	edges = append(edges, t[len(t)-1])
-
-	// Left and right columns, top to bottom
-	leftCol := make([]byte, len(t))
-	rightCol := make([]byte, len(t))
 	for y := 0; y < len(t); y++ {
-		leftCol[y] = t[y][0]
-		rightCol[y] = t[y][len(t[y])-1]
-	}
-	edges = append(edges, string(leftCol))
-	edges = append(edges, string(rightCol))
-
-	// Take the lesser of e and reverse(e)
-	for i, e := range edges {
-		edges[i] = advent2020.MinStr(e, advent2020.Reverse(e))
+		for x := 0; x < len(t[0]); x++ {
+			ret[y][x] = t[x][len(t[0])-y-1]
+		}
 	}
 
-	return edges
+	return ret
+}
+
+func (t Tile) Flip() Tile {
+	ret := make(Tile, len(t))
+	for i := 0; i < len(t); i++ {
+		ret[i] = t[len(t)-i-1]
+	}
+	return ret
+}
+
+func (t Tile) RightSideMatchesLeftOf(neighbour Tile) bool {
+	for y := 0; y < len(t); y++ {
+		if t[y][len(t[0])-1] != neighbour[y][0] {
+			return false
+		}
+	}
+	return true
+}
+
+func (t Tile) BottomSideMatchesTopOf(neighbour Tile) bool {
+	for x := 0; x < len(t[0]); x++ {
+		if t[len(t)-1][x] != neighbour[0][x] {
+			return false
+		}
+	}
+	return true
 }

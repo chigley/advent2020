@@ -33,7 +33,12 @@ func TestDay20(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assert.Equal(t, tt.part1, day20.Part1(tiles))
+			picture, err := day20.BuildPicture(tiles)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			assert.Equal(t, tt.part1, day20.Part1(picture))
 		})
 	}
 }

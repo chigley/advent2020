@@ -14,7 +14,7 @@ func ParseTiles(groups [][]string) (map[int]Tile, error) {
 
 		tile := make(Tile, len(g)-1)
 		for y := 0; y < len(g)-1; y++ {
-			tile[y] = g[y+1]
+			tile[y] = []byte(g[y+1])
 		}
 
 		tiles[tileID] = tile

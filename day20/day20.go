@@ -1,30 +1,34 @@
 package day20
 
-func Part1(tiles map[int]Tile) int {
-	edgeCount := make(map[string]int)
+import (
+	"fmt"
+	"math"
+
+	"github.com/chigley/advent2020/bfs"
+)
+
+func BuildPicture(tiles map[int]Tile) (*Picture, error) {
+	var tileSize int
 	for _, tile := range tiles {
-		for _, e := range tile.Edges() {
-			edgeCount[e]++
-		}
+		tileSize = len(tile)
+		break
 	}
 
-	var cornerIDs []int
-	for tileID, tile := range tiles {
-		var numUniqueEdges int
-		for _, e := range tile.Edges() {
-			if edgeCount[e] == 1 {
-				numUniqueEdges++
-			}
-		}
-
-		if numUniqueEdges == 2 {
-			cornerIDs = append(cornerIDs, tileID)
-		}
+	size := int(math.Sqrt(float64(len(tiles))))
+	start := &BFSNode{
+		picture:      NewPicture(size, tileSize),
+		tilesToPlace: tiles,
+		noncer:       NewNoncer(),
 	}
 
-	product := 1
-	for _, id := range cornerIDs {
-		product *= id
+	path, err := bfs.Search(start)
+	if err != nil {
+		return nil, fmt.Errorf("day20: BFS: %w", err)
 	}
-	return product
+
+	return &path[len(path)-1].(*BFSNode).picture, nil
+}
+
+func Part1(p *Picture) int {
+	return p.tileIDs[0][0] * p.tileIDs[0][p.size-1] * p.tileIDs[p.size-1][0] * p.tileIDs[p.size-1][p.size-1]
 }
