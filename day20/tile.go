@@ -1,5 +1,16 @@
 package day20
 
+var seaMonster = []string{
+	"                  # ",
+	"#    ##    ##    ###",
+	" #  #  #  #  #  #   ",
+}
+
+const (
+	seaMonsterHeight = 3
+	seaMonsterWidth  = len("#    ##    ##    ###")
+)
+
 type Tile [][]byte
 
 func (t Tile) Permutations() []Tile {
@@ -55,4 +66,39 @@ func (t Tile) BottomSideMatchesTopOf(neighbour Tile) bool {
 		}
 	}
 	return true
+}
+
+func (t Tile) ReplaceSeaMonsters() bool {
+	// (y, x) is the top left corner of our sliding window
+	var ok bool
+	for y := 0; y < len(t)-seaMonsterHeight; y++ {
+		for x := 0; x < len(t[0])-seaMonsterWidth; x++ {
+			if t.HaveMonsterAt(y, x) {
+				t.ReplaceMonsterAt(y, x)
+				ok = true
+			}
+		}
+	}
+	return ok
+}
+
+func (t Tile) HaveMonsterAt(y, x int) bool {
+	for monsterY := 0; monsterY < seaMonsterHeight; monsterY++ {
+		for monsterX := 0; monsterX < seaMonsterWidth; monsterX++ {
+			if seaMonster[monsterY][monsterX] == '#' && t[y+monsterY][x+monsterX] != '#' {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func (t Tile) ReplaceMonsterAt(y, x int) {
+	for monsterY := 0; monsterY < seaMonsterHeight; monsterY++ {
+		for monsterX := 0; monsterX < seaMonsterWidth; monsterX++ {
+			if seaMonster[monsterY][monsterX] == '#' {
+				t[y+monsterY][x+monsterX] = 'O'
+			}
+		}
+	}
 }

@@ -100,24 +100,51 @@ func (p Picture) TileAt(pos advent2020.XY) Tile {
 }
 
 func (p Picture) String() string {
+	return p.ImageString(true)
+}
+
+func (p Picture) ImageString(includeBorders bool) string {
+	var (
+		minY, maxY int
+		size       int
+	)
+	if includeBorders {
+		minY, maxY = 0, p.tileSize
+		size = p.tileSize
+	} else {
+		minY, maxY = 1, p.tileSize-1
+		size = p.tileSize - 2
+	}
+
 	var b strings.Builder
 	for tileY := 0; tileY < p.size; tileY++ {
-		for y := 0; y < p.tileSize; y++ {
+		for y := minY; y < maxY; y++ {
 			for tileX := 0; tileX < p.size; tileX++ {
 				t := p.tiles[tileY][tileX]
 				if t == nil {
-					b.WriteString(strings.Repeat("?", p.tileSize))
+					b.WriteString(strings.Repeat("?", size))
 				} else {
-					b.WriteString(string(t[y]))
+					if includeBorders {
+						b.WriteString(string(t[y]))
+					} else {
+						row := string(t[y])
+						b.WriteString(row[1 : len(row)-1])
+					}
 				}
 
-				if tileX != p.size-1 {
+				if includeBorders && tileX != p.size-1 {
 					b.WriteRune(' ')
 				}
 			}
+
+			if !(tileY == p.size-1 && y == maxY-1) {
+				b.WriteRune('\n')
+			}
+		}
+
+		if includeBorders && tileY != p.size-1 {
 			b.WriteRune('\n')
 		}
-		b.WriteRune('\n')
 	}
 	return b.String()
 }
