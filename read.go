@@ -113,3 +113,15 @@ func ReadIntLines(r io.Reader) ([][]int, error) {
 		ret = append(ret, line)
 	}
 }
+
+func ReadDigits(in string) ([]int, error) {
+	ret := make([]int, len(in))
+	for i := 0; i < len(in); i++ {
+		var err error
+		ret[i], err = strconv.Atoi(string(in[i]))
+		if err != nil {
+			return nil, fmt.Errorf("advent2020: atoi: %w", err)
+		}
+	}
+	return ret, nil
+}
