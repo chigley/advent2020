@@ -19,7 +19,7 @@ type RuleID int
 
 type Rule interface {
 	Match(rules map[RuleID]Rule, cache map[CacheKey]bool, message string) bool
-	String() string
+	fmt.Stringer
 }
 
 type AdjacentRule []Rule
