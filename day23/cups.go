@@ -80,6 +80,14 @@ func (c *Cups) destinationCup(invalid map[int]struct{}) *list.Element {
 	}
 }
 
+func (c *Cups) PushBack(n int) error {
+	if _, ok := c.valueToEl[n]; ok {
+		return fmt.Errorf("day23: list already contains %d: refusing to add it again", n)
+	}
+	c.valueToEl[n] = c.l.PushBack(n)
+	return nil
+}
+
 func (c *Cups) ResultString() string {
 	var b strings.Builder
 
@@ -94,6 +102,18 @@ func (c *Cups) ResultString() string {
 
 		e = c.next(e)
 	}
+}
+
+func (c *Cups) ResultInt() int {
+	product := 1
+
+	e := c.valueToEl[1]
+	for i := 0; i < 2; i++ {
+		e = c.next(e)
+		product *= e.Value.(int)
+	}
+
+	return product
 }
 
 func (c *Cups) String() string {
