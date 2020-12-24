@@ -78,6 +78,43 @@ func (p XY) RotateAnticlockwise(steps int) XY {
 	return p.RotateClockwise(4 - steps%4)
 }
 
+type HexDirection int
+
+const (
+	HexEast HexDirection = iota
+	HexSouthEast
+	HexSouthWest
+	HexWest
+	HexNorthWest
+	HexNorthEast
+)
+
+// https://www.redblobgames.com/grids/hexagons/#coordinates-cube
+var HexCompass = map[HexDirection]XYZ{
+	HexEast:      {1, -1, 0},
+	HexSouthEast: {0, -1, 1},
+	HexSouthWest: {-1, 0, 1},
+	HexWest:      {-1, 1, 0},
+	HexNorthWest: {0, 1, -1},
+	HexNorthEast: {1, 0, -1},
+}
+
+type XYZ struct {
+	X, Y, Z int
+}
+
+func (p1 XYZ) Add(p2 XYZ) XYZ {
+	return XYZ{
+		X: p1.X + p2.X,
+		Y: p1.Y + p2.Y,
+		Z: p1.Z + p2.Z,
+	}
+}
+
+func (p XYZ) AddHexCompass(d HexDirection) XYZ {
+	return p.Add(HexCompass[d])
+}
+
 type WXYZ struct {
 	W, X, Y, Z int
 }
