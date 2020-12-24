@@ -7,7 +7,7 @@ import (
 	"github.com/chigley/advent2020"
 )
 
-type Grid map[advent2020.XYZ]struct{}
+type Grid map[advent2020.XYZ]bool
 
 func NewGrid(instructions []string) (Grid, error) {
 	grid := make(Grid)
@@ -44,11 +44,64 @@ func NewGrid(instructions []string) (Grid, error) {
 			in = in[consumed:]
 		}
 
-		if _, ok := grid[pos]; ok {
-			delete(grid, pos)
-		} else {
-			grid[pos] = struct{}{}
-		}
+		grid[pos] = !grid[pos]
 	}
 	return grid, nil
+}
+
+func (g Grid) Step() Grid {
+	// We need to consider new values for each position we already have, as well
+	// as each of their six neighbours (growing outwards).
+	//
+	// len(g) isn't a great capacity hint because we know we'll need bigger. It
+	// might be better than nothing?
+	posToCheck := make(map[advent2020.XYZ]struct{}, len(g))
+	for pos := range g {
+		posToCheck[pos] = struct{}{}
+		for _, dir := range advent2020.HexCompass {
+			posToCheck[pos.Add(dir)] = struct{}{}
+		}
+	}
+
+	newGrid := make(Grid, len(posToCheck))
+	for pos := range posToCheck {
+		old := g[pos]
+		adjacentBlack := g.AdjacentBlack(pos)
+
+		if old && (adjacentBlack == 0 || adjacentBlack > 2) {
+			newGrid[pos] = false
+		} else if !old && adjacentBlack == 2 {
+			newGrid[pos] = true
+		} else {
+			newGrid[pos] = old
+		}
+	}
+	return newGrid
+}
+
+func (g Grid) StepN(n int) Grid {
+	for i := 0; i < n; i++ {
+		g = g.Step()
+	}
+	return g
+}
+
+func (g Grid) AdjacentBlack(pos advent2020.XYZ) int {
+	var count int
+	for _, dir := range advent2020.HexCompass {
+		if g[pos.Add(dir)] {
+			count++
+		}
+	}
+	return count
+}
+
+func (g Grid) Black() int {
+	var count int
+	for _, isBlack := range g {
+		if isBlack {
+			count++
+		}
+	}
+	return count
 }

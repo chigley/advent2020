@@ -115,6 +115,16 @@ func (p XYZ) AddHexCompass(d HexDirection) XYZ {
 	return p.Add(HexCompass[d])
 }
 
+func (p XYZ) HexAdjacent() []XYZ {
+	adjacent := make([]XYZ, len(HexCompass))
+	var i int
+	for _, d := range HexCompass {
+		adjacent[i] = p.Add(d)
+		i++
+	}
+	return adjacent
+}
+
 type WXYZ struct {
 	W, X, Y, Z int
 }
