@@ -11,10 +11,10 @@ import (
 
 var tests = []struct {
 	in  string
-	out int
+	out string
 }{
-	{"example", 14897079},
-	{"input", 181800},
+	{"example", "14897079"},
+	{"input", "181800"},
 }
 
 func TestDay25(t *testing.T) {
@@ -32,17 +32,17 @@ func TestDay25(t *testing.T) {
 			if err != nil {
 				t.Error(err)
 			}
-			assert.Equal(t, tt.out, out)
+			assert.Equal(t, tt.out, out.String())
 		})
 	}
 }
 
 func TestTransform(t *testing.T) {
-	assert.Equal(t, 5764801, day25.Transform(7, 8))
-	assert.Equal(t, 17807724, day25.Transform(7, 11))
+	assert.Equal(t, "5764801", day25.Transform(7, 8).String())
+	assert.Equal(t, "17807724", day25.Transform(7, 11).String())
 }
 
 func TestLoopSize(t *testing.T) {
-	assert.Equal(t, 8, day25.LoopSize(5764801))
-	assert.Equal(t, 11, day25.LoopSize(17807724))
+	assert.Equal(t, int64(8), day25.LoopSize(5764801))
+	assert.Equal(t, int64(11), day25.LoopSize(17807724))
 }
